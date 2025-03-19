@@ -50,7 +50,7 @@ export default function ContactPage() {
       {/* Header */}
       <header className="text-center mb-12">
         <h1 className="text-5xl font-extrabold text-blue-500">Get in Touch</h1>
-        <p className="text-gray-400 mt-3 text-lg">Let's collaborate or just say hello! 🚀</p>
+        <p className="text-gray-400 mt-3 text-lg">Let`s collaborate or just say hello! 🚀</p>
       </header>
 
       {/* Contact Form Card */}
