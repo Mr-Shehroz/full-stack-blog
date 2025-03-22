@@ -1,34 +1,35 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 export async function POST(req) {
   try {
     const { name, email, message } = await req.json();
 
     if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: "All fields are required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(JSON.stringify({ error: "All fields are required" }), { status: 400 });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    // Configure Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER, // Your email address
+        pass: process.env.EMAIL_PASS, // Your email password or app password
+      },
+    });
 
-    await resend.emails.send({
-      from: "contact@yourdomain.com", // Resend recommends using your own domain
-      to: process.env.EMAIL_TO,
+    // Email options
+    const mailOptions = {
+      from: email,
+      to: process.env.EMAIL_USER, // Your email address to receive messages
       subject: `New Contact Form Submission from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    });
+    };
 
-    return new Response(JSON.stringify({ message: "Message sent successfully!" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    return new Response(JSON.stringify({ message: "Message sent successfully!" }), { status: 200 });
   } catch (error) {
-    console.error("Error sending email:", error);
-    return new Response(JSON.stringify({ error: "Failed to send message. Try again later." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ error: "Failed to send email" }), { status: 500 });
   }
 }
